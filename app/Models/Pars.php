@@ -16,13 +16,9 @@ class Pars extends Model
         $i=0;
         foreach ($characts as $charact)
         {
-            $i++;
-            if($i==2)
-            {
-                dd($charact);
-            }
+                $charactArray[(string)$charact->Ид[0]]=(string)$charact->Наименование[0];
         }
-        dd($characts[1]->Ид[0]);
+        dd($charactArray);
         $products=$xml->Каталог->Товары->Товар;
 //        dd((string)$products[2]->Ид[0]);
         dd($products[2]);
