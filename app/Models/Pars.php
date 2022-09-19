@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Orchestra\Parser\Xml\Facade as XmlParser;
+use phpQuery;
 
 class Pars extends Model
 {
@@ -55,6 +57,22 @@ class Pars extends Model
 
             }
         }
+
+
+    }
+
+    public function Pars2()
+    {
+        $Http = Http::withoutVerifying()->withOptions(["verify" => false])->get("https://geffen.ru/product/");
+        $String = $Http->body();
+        $doc = phpQuery::newDocument($String);
+        $entry = $doc->find('div.text ul li a');
+        foreach ($entry as $row) {
+            $link[] = "https://geffen.ru".pq($row)->attr('href');
+        }
+        $link[]="https://geffen.ru/product/nasosnye_stantsii_podpitki/";
+        $link[]="https://geffen.ru/product/nasosnye_stantsii_podpitki/";
+        dd($link);
 
     }
 }
