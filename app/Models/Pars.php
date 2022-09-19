@@ -68,11 +68,46 @@ class Pars extends Model
         $doc = phpQuery::newDocument($String);
         $entry = $doc->find('div.text ul li a');
         foreach ($entry as $row) {
-            $link[] = "https://geffen.ru".pq($row)->attr('href');
+            $links[] = "https://geffen.ru".pq($row)->attr('href');
         }
-        $link[]="https://geffen.ru/product/nasosnye_stantsii_podpitki/";
-        $link[]="https://geffen.ru/product/nasosnye_stantsii_podpitki/";
-        dd($link);
+        $links[]="https://geffen.ru/product/nasosnye_stantsii_podpitki/";
+        $links[]="https://geffen.ru/product/boylery_glb/";
+        foreach ($links as $link)
+        {
+            $Http = Http::withoutVerifying()->withOptions(["verify" => false])->get($link);
+            $String = $Http->body();
+            $doc = phpQuery::newDocument($String);
+            $entry = $doc->find('div.footer-button a');
+            foreach ($entry as $row) {
+                $products[] = "https://geffen.ru".pq($row)->attr('href');
+            }
+        }
+        foreach ($products as $product)
+        {
+            $Http = Http::withoutVerifying()->withOptions(["verify" => false])->get($product);
+            $String = $Http->body();
+            dd($String);
+            $data['tab_name'] = 'Котловое оборудование';
+            $data['cat_name'] = 'GEFFEN';
+            $data['site_url'] = 'https://geffen.ru ';
+            $doc = phpQuery::newDocument($String);
+            $entry = $doc->find('h1');
+            dd(pq($entry)->text());
+            $data['name'] = pq($entry)->text();
+            $entry = $doc->find('div.content');
+
+            $data['description'] = pq($entry)->html();
+            $data['price'] = 0;
+            $entry = $doc->find('div.flex-viewport');
+            dd(pq($entry)->html());
+            foreach ($entry as $row)
+            {
+                $img[] =$row->html();
+            }
+            dd($img);
+
+        }
+
 
     }
 }
