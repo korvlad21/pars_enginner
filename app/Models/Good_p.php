@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Good_p extends Model
 {
     protected $table = 'good_p';
-
+    public $timestamps = false;
     protected $fillable = [
         'tab_name',
         'cat_name',
