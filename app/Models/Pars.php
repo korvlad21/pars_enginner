@@ -166,6 +166,7 @@ class Pars extends Model
                 $data['tab_name'] = 'Полипропилен';
                 $data['cat_name'] = 'Полипропиленовые трубы';
                 $data['site_url'] = 'ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/polipropilenovye_truby_dlya_otopleniya_i_vodosnabzheniya/';
+//                $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
                 $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
                 $String = $Http->body();
                 $doc = phpQuery::newDocument($String);
@@ -175,7 +176,11 @@ class Pars extends Model
                 $description = iconv("windows-1251", "UTF-8", pq($entry)->html());
                 $data['description'] = preg_replace('/[\t\n]+/', '', $description);
                 $entry = $doc->find('div.prices_block div.price span.price_value');
-                $data['price'] = pq($entry)->text();
+                $data['price'] = preg_replace("/[^,.0-9]/", '', pq($entry)->text());
+                if($data['price']=='')
+                {
+                    $data['price']=0;
+                }
                 $good = Good_p::create($data);
                 $entry = $doc->find('div.description a');
                 foreach ($entry as $row)
@@ -190,7 +195,7 @@ class Pars extends Model
                     $dataCharact['path']=str_replace('http://localhost', '', Storage::disk('public')->url($file_name));
                     Files_p::create($dataCharact);
                 }
-                print_r($good);
+                print_r($data);
 
 
             }
