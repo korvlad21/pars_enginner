@@ -145,10 +145,10 @@ class Pars extends Model
     {
         DB::beginTransaction();
         try {
-            $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/metalloplastikovye_truby_/";
+            $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_iz_nerzhaveyushchey_stali/";
             for ($i = 2; $i <=10; $i++)
             {
-                $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/metalloplastikovye_truby_/?PAGEN_1=".$i;
+                $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_iz_nerzhaveyushchey_stali/?PAGEN_1=".$i;
             }
 
             foreach ($links as $link)
@@ -164,9 +164,9 @@ class Pars extends Model
             }
             foreach ($products as $product)
             {
-                $data['tab_name'] = 'Металлопластиковые трубы';
-                $data['cat_name'] = 'Металлопластиковые трубы';
-                $data['site_url'] = 'ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/metalloplastikovye_truby_/';
+                $data['tab_name'] = 'Трубы из нержавеющей стали';
+                $data['cat_name'] = 'Нержавеющие трубы для отопления';
+                $data['site_url'] = 'ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_iz_nerzhaveyushchey_stali/';
 //                $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
                 $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
                 $String = $Http->body();
