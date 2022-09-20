@@ -169,7 +169,8 @@ class Pars extends Model
                 $entry = $doc->find('h1');
                 $data['name'] = pq($entry)->text();
                 $entry = $doc->find('div.detail_text');
-                $data['description'] = iconv("windows-1251", "UTF-8", pq($entry)->html());
+                $description = iconv("windows-1251", "UTF-8", pq($entry)->html());
+                $data['description'] = preg_replace('/[\t\n]+/', '', $description);
                 $entry = $doc->find('div.prices_block div.price span.price_value');
                 $data['price'] = pq($entry)->text();
                 dd($data);
