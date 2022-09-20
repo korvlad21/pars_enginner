@@ -145,11 +145,12 @@ class Pars extends Model
     {
         DB::beginTransaction();
         try {
-            $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/polipropilenovye_truby_dlya_otopleniya_i_vodosnabzheniya/";
-            for ($i = 2; $i <=16; $i++)
+            $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/metalloplastikovye_truby_/";
+            for ($i = 2; $i <=10; $i++)
             {
-                $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/polipropilenovye_truby_dlya_otopleniya_i_vodosnabzheniya/?PAGEN_1=".$i;
+                $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/metalloplastikovye_truby_/?PAGEN_1=".$i;
             }
+
             foreach ($links as $link)
             {
                 $Http = Http::withoutVerifying()->withOptions(["verify" => false])->get($link);
@@ -163,9 +164,9 @@ class Pars extends Model
             }
             foreach ($products as $product)
             {
-                $data['tab_name'] = 'Полипропилен';
-                $data['cat_name'] = 'Полипропиленовые трубы';
-                $data['site_url'] = 'ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/polipropilenovye_truby_dlya_otopleniya_i_vodosnabzheniya/';
+                $data['tab_name'] = 'Металлопластиковые трубы';
+                $data['cat_name'] = 'Металлопластиковые трубы';
+                $data['site_url'] = 'ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/metalloplastikovye_truby_/';
 //                $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
                 $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
                 $String = $Http->body();
@@ -193,10 +194,11 @@ class Pars extends Model
                     Storage::disk('public')->put($file_name, $file);
                     $dataCharact['good_p_id']=$good->id;
                     $dataCharact['path']=str_replace('http://localhost', '', Storage::disk('public')->url($file_name));
+                    //НУжна для тестов
+//                    Storage::disk('public')->delete($file_name);
                     Files_p::create($dataCharact);
                 }
                 print_r($data);
-
 
             }
 
