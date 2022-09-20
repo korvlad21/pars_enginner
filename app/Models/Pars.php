@@ -141,4 +141,52 @@ class Pars extends Model
         }
 
     }
+    public function Pars3()
+    {
+        DB::beginTransaction();
+        try {
+            $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/polipropilenovye_truby_dlya_otopleniya_i_vodosnabzheniya/";
+            for ($i = 2; $i <=16; $i++)
+            {
+                $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/polipropilenovye_truby_dlya_otopleniya_i_vodosnabzheniya/?PAGEN_1=".$i;
+            }
+            foreach ($links as $link)
+            {
+                $Http = Http::withoutVerifying()->withOptions(["verify" => false])->get($link);
+                $String = $Http->body();
+                $doc = phpQuery::newDocument($String);
+                $entry = $doc->find('div.item_block a.dark_link');
+                foreach ($entry as $row)
+                {
+                    $products[]="https://ekoport.ru".pq($row)->attr('href');
+                }
+            }
+            foreach ($products as $product)
+            {
+                $Http = Http::withoutVerifying()->withOptions(["verify" => false])->get($link);
+                $String = $Http->body();
+                dd($String);
+                $doc = phpQuery::newDocument($String);
+                $entry = $doc->find('h1');
+                $data['name'] = pq($entry)->text();
+                $entry = $doc->find('div.detail_text');
+                dd(pq($entry)->html());
+                $data['description'] = pq($entry)->html();
+                $entry = $doc->find('div.price span.price_value');
+                $data['price'] = pq($entry)->text();
+                dd($data);
+            }
+
+
+
+
+            DB::commit();
+        }
+        catch (\Exception $e)
+        {
+            DB::rollBack();
+            dd($e);
+        }
+
+    }
 }
