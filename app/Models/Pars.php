@@ -163,16 +163,14 @@ class Pars extends Model
             }
             foreach ($products as $product)
             {
-                $Http = Http::withoutVerifying()->withOptions(["verify" => false])->get($link);
+                $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
                 $String = $Http->body();
-                dd($String);
                 $doc = phpQuery::newDocument($String);
                 $entry = $doc->find('h1');
                 $data['name'] = pq($entry)->text();
                 $entry = $doc->find('div.detail_text');
-                dd(pq($entry)->html());
-                $data['description'] = pq($entry)->html();
-                $entry = $doc->find('div.price span.price_value');
+                $data['description'] = iconv("windows-1251", "UTF-8", pq($entry)->html());
+                $entry = $doc->find('div.prices_block div.price span.price_value');
                 $data['price'] = pq($entry)->text();
                 dd($data);
             }
