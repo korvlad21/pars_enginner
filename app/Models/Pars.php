@@ -242,15 +242,16 @@ class Pars extends Model
                 $doc = phpQuery::newDocument($String);
                 $entry = $doc->find('h1');
                 $data['name']=pq($entry)->text();
-//                $entry = $doc->find('div.detail_text');
-//                $description = iconv("windows-1251", "UTF-8", pq($entry)->html());
-//                $data['description'] = preg_replace('/[\t\n]+/', '', $description);
-//                $entry = $doc->find('div.prices_block div.price span.price_value');
-//                $data['price'] = preg_replace("/[^,.0-9]/", '', pq($entry)->text());
-//                if($data['price']=='')
-//                {
-//                    $data['price']=0;
-//                }
+                $entry = $doc->find('div.content');
+                $description = iconv("windows-1251", "UTF-8", pq($entry)->html());
+                $data['description'] = preg_replace('/[\t\n\r]+/', '', $description);
+                dd($data);
+                $entry = $doc->find('div.prices_block div.price span.price_value');
+                $data['price'] = preg_replace("/[^,.0-9]/", '', pq($entry)->text());
+                if($data['price']=='')
+                {
+                    $data['price']=0;
+                }
                 $entry = $doc->find('div.inner a');
                 foreach ($entry as $row) {
                     $img = pq($row)->attr('href');
