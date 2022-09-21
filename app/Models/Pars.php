@@ -145,10 +145,10 @@ class Pars extends Model
     {
         DB::beginTransaction();
         try {
-            $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_pvkh_polivinilkhlorid/";
-            for ($i = 2; $i <=16; $i++)
+            $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_pnd_dlya_kholodnogo_vodosnabzheniya_polietilen_nizkogo_davleniya/";
+            for ($i = 2; $i <=9; $i++)
             {
-                $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_pvkh_polivinilkhlorid/?PAGEN_1=".$i;
+                $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_pnd_dlya_kholodnogo_vodosnabzheniya_polietilen_nizkogo_davleniya/?PAGEN_1=".$i;
             }
 
             foreach ($links as $link)
@@ -164,9 +164,9 @@ class Pars extends Model
             }
             foreach ($products as $product)
             {
-                $data['tab_name'] = 'Трубы ПВХ';
-                $data['cat_name'] = 'Трубы ПВХ';
-                $data['site_url'] = 'ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_pvkh_polivinilkhlorid/';
+                $data['tab_name'] = 'Трубы ПНД для холодного водоснабжения';
+                $data['cat_name'] = 'Трубы ПНД';
+                $data['site_url'] = 'ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_pnd_dlya_kholodnogo_vodosnabzheniya_polietilen_nizkogo_davleniya/';
 //                $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
                 $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
                 $String = $Http->body();
