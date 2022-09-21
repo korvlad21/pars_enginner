@@ -145,10 +145,10 @@ class Pars extends Model
     {
         DB::beginTransaction();
         try {
-            $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_pnd_dlya_kholodnogo_vodosnabzheniya_polietilen_nizkogo_davleniya/";
-            for ($i = 2; $i <=9; $i++)
+            $links[]="https://ekoport.ru/catalog/kanalizatsiya_i_drenazhnye_sistemy/";
+            for ($i = 2; $i <=37; $i++)
             {
-                $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_pnd_dlya_kholodnogo_vodosnabzheniya_polietilen_nizkogo_davleniya/?PAGEN_1=".$i;
+                $links[]="https://ekoport.ru/catalog/kanalizatsiya_i_drenazhnye_sistemy/?PAGEN_1=".$i;
             }
 
             foreach ($links as $link)
@@ -164,9 +164,9 @@ class Pars extends Model
             }
             foreach ($products as $product)
             {
-                $data['tab_name'] = 'Трубы ПНД для холодного водоснабжения';
-                $data['cat_name'] = 'Трубы ПНД';
-                $data['site_url'] = 'ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_pnd_dlya_kholodnogo_vodosnabzheniya_polietilen_nizkogo_davleniya/';
+                $data['tab_name'] = 'Канализация и дренажные системы';
+                $data['cat_name'] = 'Дренажные системы и канализация';
+                $data['site_url'] = 'ekoport.ru/catalog/kanalizatsiya_i_drenazhnye_sistemy/';
 //                $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
                 $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
                 $String = $Http->body();
@@ -175,6 +175,73 @@ class Pars extends Model
                 $title=pq($entry)->text();
 
                 $data['name'] = str_replace("( АКЦИЯ! )", "",$title);
+                $entry = $doc->find('div.detail_text');
+                $description = iconv("windows-1251", "UTF-8", pq($entry)->html());
+                $data['description'] = preg_replace('/[\t\n]+/', '', $description);
+                $entry = $doc->find('div.prices_block div.price span.price_value');
+                $data['price'] = preg_replace("/[^,.0-9]/", '', pq($entry)->text());
+                if($data['price']=='')
+                {
+                    $data['price']=0;
+                }
+                $good = Good_p::create($data);
+                $entry = $doc->find('div.description a');
+                foreach ($entry as $row)
+                {
+                    $filehref=pq($row)->attr('href');
+                    $url = "https://ekoport.ru" . $filehref;
+                    $file_extension = pathinfo($url)['extension'];
+                    $file_name = 'files/' . Str::random(30) . '.' . $file_extension;
+                    $file = file_get_contents($url);
+                    Storage::disk('public')->put($file_name, $file);
+                    $dataCharact['good_p_id']=$good->id;
+                    $dataCharact['path']=str_replace('http://localhost', '', Storage::disk('public')->url($file_name));
+                    //НУжна для тестов
+//                    Storage::disk('public')->delete($file_name);
+                    Files_p::create($dataCharact);
+                }
+                print_r($data);
+
+            }
+
+
+
+
+            DB::commit();
+        }
+        catch (\Exception $e)
+        {
+            DB::rollBack();
+            dd($e);
+        }
+
+    }
+
+    public function Pars4()
+    {
+        DB::beginTransaction();
+        try {
+            $link="https://www.logikamarket.ru/catalog/teploschetchiki/";
+                $Http = Http::withoutVerifying()->withOptions(["verify" => false])->get($link);
+                $String = $Http->body();
+                $doc = phpQuery::newDocument($String);
+                $entry = $doc->find('div.text a');
+                foreach ($entry as $row)
+                {
+                    $products[]="https://www.logikamarket.ru".pq($row)->attr('href');
+                }
+
+            foreach ($products as $product)
+            {
+                $data['tab_name'] = 'Теплосчетчики';
+                $data['cat_name'] = 'Теплосчетчики';
+                $data['site_url'] = 'www.logikamarket.ru/catalog/teploschetchiki/';
+//                $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
+                $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
+                $String = $Http->body();
+                $doc = phpQuery::newDocument($String);
+                $entry = $doc->find('h1');
+                $data['name']=pq($entry)->text();
                 $entry = $doc->find('div.detail_text');
                 $description = iconv("windows-1251", "UTF-8", pq($entry)->html());
                 $data['description'] = preg_replace('/[\t\n]+/', '', $description);
