@@ -145,10 +145,10 @@ class Pars extends Model
     {
         DB::beginTransaction();
         try {
-            $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_iz_nerzhaveyushchey_stali/";
-            for ($i = 2; $i <=10; $i++)
+            $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_pvkh_polivinilkhlorid/";
+            for ($i = 2; $i <=16; $i++)
             {
-                $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_iz_nerzhaveyushchey_stali/?PAGEN_1=".$i;
+                $links[]="https://ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_pvkh_polivinilkhlorid/?PAGEN_1=".$i;
             }
 
             foreach ($links as $link)
@@ -164,15 +164,17 @@ class Pars extends Model
             }
             foreach ($products as $product)
             {
-                $data['tab_name'] = 'Трубы из нержавеющей стали';
-                $data['cat_name'] = 'Нержавеющие трубы для отопления';
-                $data['site_url'] = 'ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_iz_nerzhaveyushchey_stali/';
+                $data['tab_name'] = 'Трубы ПВХ';
+                $data['cat_name'] = 'Трубы ПВХ';
+                $data['site_url'] = 'ekoport.ru/catalog/truboprovodnye_sistemy_vodosnabzheniya_i_otopleniya/truby_pvkh_polivinilkhlorid/';
 //                $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
                 $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
                 $String = $Http->body();
                 $doc = phpQuery::newDocument($String);
                 $entry = $doc->find('h1');
-                $data['name'] = pq($entry)->text();
+                $title=pq($entry)->text();
+
+                $data['name'] = str_replace("( АКЦИЯ! )", "",$title);
                 $entry = $doc->find('div.detail_text');
                 $description = iconv("windows-1251", "UTF-8", pq($entry)->html());
                 $data['description'] = preg_replace('/[\t\n]+/', '', $description);
