@@ -11,9 +11,9 @@ class ParsController extends Controller
 
     public function __invoke()
     {
-//        return 1;
-//        ParsJob::dispatch()->onQueue('parsing');
-        Pars::Pars4();
+    //    return 1;
+       ParsJob::dispatch()->onQueue('parsing');
+        // Pars::Pars4();
         return redirect()->back();
     }
 
