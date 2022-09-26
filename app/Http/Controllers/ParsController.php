@@ -13,7 +13,7 @@ class ParsController extends Controller
     {
     //    return 1;
        ParsJob::dispatch()->onQueue('parsing');
-        // Pars::Pars4();
+        // Pars::Pars5();
         return redirect()->back();
     }
 

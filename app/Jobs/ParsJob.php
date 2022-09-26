@@ -38,6 +38,6 @@ class ParsJob implements ShouldQueue
      */
     public function handle()
     {
-        Pars::Pars4();
+        Pars::Pars6();
     }
 }

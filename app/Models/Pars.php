@@ -230,14 +230,15 @@ class Pars extends Model
                 Storage::disk('public')->put($file_name, $file);
                 $data['image'] = str_replace('http://localhost', '', Storage::disk('public')->url($file_name));
                 $entry = $doc->find('div.info div.price div.price_new span.price_val');
-                $priceProverka = iconv("windows-1251", "UTF-8", pq($row)->html());
-                echo ($product);
+                $priceProverka = iconv("windows-1251", "UTF-8", pq($entry)->html());
                 if ($priceProverka == "Цена по запросу") {
                     $data['price'] = 0;
                     $entry = $doc->find('h1');
                     $data['name'] = pq($entry)->text();
+                    echo(1);
                     $good = Good_p::create($data);
                 } else {
+                    echo(2);
                     $entry = $doc->find('div.modifications table.mods td');
                     foreach ($entry as $row) {
                         if (pq($row)->attr('class') == 'name') {
@@ -257,6 +258,179 @@ class Pars extends Model
                             unset($data['price']);
                             unset($data['name']);
                         }
+                    }
+                }
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            dd($e);
+        }
+    }
+
+    public function Pars5()
+    {
+        DB::beginTransaction();
+        try {
+            $link = "https://www.logikamarket.ru/catalog/teplovychisliteli/";
+            $Http = Http::withoutVerifying()->withOptions(["verify" => false])->get($link);
+            $String = $Http->body();
+            $doc = phpQuery::newDocument($String);
+            $entry = $doc->find('div.text a');
+            foreach ($entry as $row) {
+                $products[] = "https://www.logikamarket.ru" . pq($row)->attr('href');
+            }
+            foreach ($products as $product) {
+                $data['tab_name'] = 'Тепловычислители';
+                $data['cat_name'] = 'Тепловычислители';
+                $data['site_url'] = 'www.logikamarket.ru/catalog/teplovychisliteli/';
+                $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
+                // $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get("https://www.logikamarket.ru/catalog/teplovychisliteli/karat-306/");
+                $String = $Http->body();
+                $doc = phpQuery::newDocument($String);
+                $entry = $doc->find('div.content');
+                $description = iconv("windows-1251", "UTF-8", pq($entry)->html());
+                $data['description'] = preg_replace('/[\t\n\r]+/', '', $description);
+                $entry = $doc->find('div.inner a');
+                foreach ($entry as $row) {
+                    $img = pq($row)->attr('href');
+                }
+                $url = "https://www.logikamarket.ru" . $img;
+                $file_extension = pathinfo($url)['extension'];
+                $file_name = 'good/' . Str::random(30) . '.' . $file_extension;
+                $file = file_get_contents($url);
+                Storage::disk('public')->put($file_name, $file);
+                $data['image'] = str_replace('http://localhost', '', Storage::disk('public')->url($file_name));
+                $entry = $doc->find('div.info div.price div.price_new span.price_val');
+                $priceProverka = iconv("windows-1251", "UTF-8", pq($entry)->html());
+                if ($priceProverka != "") {
+                    if($priceProverka == "Цена по запросу")
+                    {
+                        $data['price'] = 0;
+                    }
+                    else{
+                        $data['price'] = $priceProverka;
+                    }
+                    $entry = $doc->find('h1');
+                    $data['name'] = pq($entry)->text();
+                    $good = Good_p::create($data);
+                    print_r($data['name']);
+                    print_r($data['price']);
+                }
+                else
+                {
+                    $entry = $doc->find('table.mods td');
+                    foreach ($entry as $row) {
+                        if (pq($row)->attr('class') == 'name') {
+                            $data['name'] = iconv("windows-1251", "UTF-8", pq($row)->html());
+                        }
+                        if (pq($row)->attr('class') == 'mprice') {
+                            $price = iconv("windows-1251", "UTF-8", pq($row)->html());
+                            $price = preg_replace("/[^,.0-9]/", '', $price);
+                            if ($price == "") {
+                                $data['price'] = 0;
+                            } else {
+                                $data['price'] = $price;
+                            }
+
+                        }
+                        if (isset($data['name']) && isset($data['price'])) {
+                            $good = Good_p::create($data);
+                            print_r($data['name']);
+                            print_r($data['price']);
+                            unset($data['price']);
+                            unset($data['name']);
+                        }
+
+                    }
+                }
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            dd($e);
+        }
+    }
+
+    public function Pars6()
+    {
+        DB::beginTransaction();
+        try {
+            $links[]="https://www.logikamarket.ru/catalog/datchiki-temperatury/termometry-soprotivleniya/";
+            $links[]="https://www.logikamarket.ru/catalog/datchiki-temperatury/termopreobrazovateli/";
+            $links[]="https://www.logikamarket.ru/catalog/datchiki-temperatury/komplekty-termometrov/";
+            foreach($links as $link)
+            {
+                $Http = Http::withoutVerifying()->withOptions(["verify" => false])->get($link);
+                $String = $Http->body();
+                $doc = phpQuery::newDocument($String);
+                $entry = $doc->find('div.text a');
+                foreach ($entry as $row) {
+                    $products[] = "https://www.logikamarket.ru" . pq($row)->attr('href');
+                }
+            }
+            foreach ($products as $product) {
+                $data['tab_name'] = 'Датчики температуры';
+                $data['cat_name'] = 'Датчики температуры';
+                $data['site_url'] = 'www.logikamarket.ru/catalog/datchiki-temperatury/';
+                $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get($product);
+                // $Http = Http::withoutVerifying()->withHeaders(['Content-Type' => ['text/html; charset=UTF-8']])->withOptions(["verify" => false])->get("https://www.logikamarket.ru/catalog/teplovychisliteli/karat-306/");
+                $String = $Http->body();
+                $doc = phpQuery::newDocument($String);
+                $entry = $doc->find('div.content');
+                $description = iconv("windows-1251", "UTF-8", pq($entry)->html());
+                $data['description'] = preg_replace('/[\t\n\r]+/', '', $description);
+                $entry = $doc->find('div.inner a');
+                foreach ($entry as $row) {
+                    $img = pq($row)->attr('href');
+                }
+                $url = "https://www.logikamarket.ru" . $img;
+                $file_extension = pathinfo($url)['extension'];
+                $file_name = 'good/' . Str::random(30) . '.' . $file_extension;
+                $file = file_get_contents($url);
+                Storage::disk('public')->put($file_name, $file);
+                $data['image'] = str_replace('http://localhost', '', Storage::disk('public')->url($file_name));
+                $entry = $doc->find('div.info div.price div.price_new span.price_val');
+                $priceProverka = iconv("windows-1251", "UTF-8", pq($entry)->html());
+                if ($priceProverka != "") {
+                    if($priceProverka == "Цена по запросу")
+                    {
+                        $data['price'] = 0;
+                    }
+                    else{
+                        $data['price'] = $priceProverka;
+                    }
+                    $entry = $doc->find('h1');
+                    $data['name'] = pq($entry)->text();
+                    $good = Good_p::create($data);
+                    print_r($data['name']);
+                    print_r($data['price']);
+                }
+                else
+                {
+                    $entry = $doc->find('table.mods td');
+                    foreach ($entry as $row) {
+                        if (pq($row)->attr('class') == 'name') {
+                            $data['name'] = iconv("windows-1251", "UTF-8", pq($row)->html());
+                        }
+                        if (pq($row)->attr('class') == 'mprice') {
+                            $price = iconv("windows-1251", "UTF-8", pq($row)->html());
+                            $price = preg_replace("/[^,.0-9]/", '', $price);
+                            if ($price == "") {
+                                $data['price'] = 0;
+                            } else {
+                                $data['price'] = $price;
+                            }
+
+                        }
+                        if (isset($data['name']) && isset($data['price'])) {
+                            $good = Good_p::create($data);
+                            print_r($data['name']);
+                            print_r($data['price']);
+                            unset($data['price']);
+                            unset($data['name']);
+                        }
+
                     }
                 }
             }
